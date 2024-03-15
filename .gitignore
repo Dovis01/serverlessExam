@@ -1,6 +1,7 @@
 *.js
 !jest.config.js
 node_modules
+.idea
 
 # CDK asset staging directory
 .cdk.staging

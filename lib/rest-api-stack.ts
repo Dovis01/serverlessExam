@@ -40,7 +40,7 @@ export class RestAPIStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       tableName: "MovieAwards",
     });
- 
+
     const movieCrewTable = new dynamodb.Table(this, "MovieCrewTable", {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: "movieId", type: dynamodb.AttributeType.NUMBER },
@@ -125,8 +125,6 @@ export class RestAPIStack extends cdk.Stack {
             [movieCastsTable.tableName]: generateBatch(movieCasts),
             [movieAwardsTable.tableName]: generateBatch(movieAwards),
             [movieCrewTable.tableName]: generateBatch(movieCrew),
-
-
           },
         },
         physicalResourceId: custom.PhysicalResourceId.of("moviesddbInitData"), //.of(Date.now().toString()),
@@ -172,7 +170,7 @@ export class RestAPIStack extends cdk.Stack {
       "DELETE",
       new apig.LambdaIntegration(deleteMovieByIdFn, { proxy: true })
     );
-    
+
     // Permissions;
     moviesTable.grantReadData(getMovieByIdFn);
     moviesTable.grantReadData(getAllMoviesFn);
