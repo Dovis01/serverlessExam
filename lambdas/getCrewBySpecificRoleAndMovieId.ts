@@ -65,7 +65,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {    
             const queryCommandOutput = await dynamoDbDocClient.send(
                 new QueryCommand({
                     TableName: process.env.TABLE_NAME,
-                    IndexName: "ReviewerNameIndex",
+                    IndexName: "NamesIx",
                     KeyConditionExpression: "movieId = :m AND contains(names, :n)",
                     ExpressionAttributeValues: {
                         ":m": movieId,
