@@ -1,6 +1,11 @@
 import {APIGatewayProxyHandlerV2} from "aws-lambda";
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
 import {DynamoDBDocumentClient, QueryCommand} from "@aws-sdk/lib-dynamodb";
+import Ajv from "ajv";
+import schema from "../shared/types.schema.json";
+
+const ajv = new Ajv({coerceTypes: true});
+const isValidQueryParams = ajv.compile(schema.definitions["MovieCrewQueryParams"] || {});
 
 const dynamoDbDocClient = createDynamoDbDocClient();
 
@@ -51,6 +56,33 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {    
                     "content-type": "application/json",
                 },
                 body: JSON.stringify({Message: "Invalid or wrong movie Id or role name."}),
+            };
+        }
+
+        const queryParams = event.queryStringParameters;
+
+        if (isValidQueryParams(queryParams)) {
+            const queryCommandOutput = await dynamoDbDocClient.send(
+                new QueryCommand({
+                    TableName: process.env.TABLE_NAME,
+                    IndexName: "ReviewerNameIndex",
+                    KeyConditionExpression: "movieId = :m AND contains(names, :n)",
+                    ExpressionAttributeValues: {
+                        ":m": movieId,
+                        ":n": queryParams,
+                    },
+                })
+            );
+
+            return {
+                statusCode: 200,
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: "Get crew members by movie id and role which contains substring successfully.",
+                    data: queryCommandOutput.Items
+                }),
             };
         }
 

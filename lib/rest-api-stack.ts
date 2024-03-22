@@ -49,6 +49,12 @@ export class RestAPIStack extends cdk.Stack {
             tableName: "MovieCrew",
         });
 
+        // Add the local secondary index for Question 2
+        movieCrewTable.addLocalSecondaryIndex({
+            indexName: "NamesIx",
+            sortKey: { name: "names", type: dynamodb.AttributeType.STRING },
+        })
+
         // Functions
         const getMovieByIdFn = new lambdanode.NodejsFunction(
             this,

@@ -42,3 +42,7 @@ export type MovieCrewRole = {
     crewRole: string;
     names: string;
 };
+
+export type MovieCrewQueryParams = {
+    name?: string;
+};
